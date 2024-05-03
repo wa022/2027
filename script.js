@@ -10,7 +10,7 @@ fetch('https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecG
       const cover = book[1];
       const author = book[2];
       const review = book[4];
-      const bookId = book[5]; // Assuming there is a 'Book ID' column in your spreadsheet
+      const bookId = book[1]; // Assuming the book ID is in the second column (index 1)
 
       const bookElement = document.createElement('div');
       bookElement.classList.add('book');
@@ -51,14 +51,13 @@ fetch('https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecG
   .then(data => {
     const books = data.values.slice(1); // Skip header row
 
-    const book = books.find(book => book[5] === bookId); // Assuming there is a 'Book ID' column in your spreadsheet
+    const book = books.find(book => book[1] === bookId); // Assuming the book ID is in the second column (index 1)
 
     if (book) {
       const title = book[0];
       const cover = book[1];
       const author = book[2];
       const review = book[4];
-
       const bookDetailsElement = document.getElementById('book-details');
 
       const coverImage = document.createElement('img');
