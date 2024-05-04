@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مراجعاتي</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+  /* style.css */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center; /* Align items to the center */
+      padding: 10px 20px; /* Add padding for better spacing */
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      text-align: right;
+    }
+
+    #search-bar-container {
+      display: flex;
+      align-items: center;
+    }
+
+    #search-box {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+     
+    }
+
+    #categories-dropdown {
+      margin-left: 20px; /* Adjust spacing as needed */
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #fff;
+      appearance: none; /* Hide default dropdown arrow */
+    }
+
+    #categories-dropdown:hover {
+      border-color: #ddd;
+    }
+
+    #categories-dropdown:focus {
+      outline: none;
+      border-color: #ccc;
+    }
+
+    #results-container {
+      display: flex;
+      flex-direction: column; /* Stack categories dropdown and book results */
+      align-items: center;
+      padding: 20px;
+    }
+
+    #categories-dropdown-top {
+      margin-bottom: 20px; /* Add spacing between top dropdown and book results */
+    }
+
+    #results {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+    }
+
+    .book {
+      width: 250px; /* Adjust width as needed */
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .book img {
+      width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .book h2 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .book p {
+      font-size: 0.9em;
+      line-height: 1.6;
+    }
+
+
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column; /* Stack logo, search, and categories */
+        align-items: flex-start;
+      }
+
+      .header-content {
+        margin-top: 10px; /* Add space between logo and search box on smaller screens */
+      }
+
+      #search-bar-container {
+        margin: 0; /* Remove left margin on smaller screens */
+        width: 100%; /* Make search box full width */
+      }
+
+      header h1 {
+        text-align: center; /* Center align header on smaller screens */
+      }
+
+      .book {
+        width: calc(50% - 20px); /* Make books take up half the width minus margins */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .book {
+        width: 100%; /* Make books full width on extra small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+ 
+
+
+<section id="results-container">
+    <h3>مراجعاتي</h3> <input type="text" id="search-box" placeholder="ابحث عن رواية">
+      
+    </select>
+
+
+
+
+
+  <section id="results-container">
+    <select id="categories-dropdown-top">
+      <option value="all">الكل</option>
+    </select>
+    <div id="results">
+    </div>
+  </section>
+
+  <script>
+    $(document).ready(function(){
+      $.ajax({
+        url: "https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyBhiqVypmyLHYPmqZYtvdSvxEopcLZBdYU",
+        method: "GET",
+        success: function(data){
+          // عمل نموذج يحتوي على البيانات المطلوبة
+          var books = data.values;
+          books.shift(); // يزيل رأس الجدول (عناوين الأعمدة)
+
+          // جمع الفئات المتاحة
+          var categories = [];
+          $.each(books, function(index, book){
+            if (!categories.includes(book[4])) {
+              categories.push(book[4]);
+            }
+          });
+
+          // تحديث قائمة الفئات المنسدلة
+          $.each(categories, function(index, category){
+            $('#categories-dropdown-top').append('<option value="' + category + '">' + category + '</option>');
+          });
+
+          // تجهيز البيانات وتنظيمها بشكل div
+          var output = '';
+          $.each(books, function(index, book){
+            output += '<div class="book ' + book[4] + '">'; // تضيف فئة الكتاب كفئة للعنصر
+            output += '<h2>' + book[0] + '</h2>'; // عنوان الكتاب
+            output += '<img src="' + book[1] + '" alt="غلاف الكتاب">'; // غلاف الكتاب
+            output += '<p><strong>اسم الكاتب: </strong>' + book[2] + '</p>'; // اسم الكاتب
+            output += '<p><strong>تاريخ الاصدار: </strong>' + book[3] + '</p>'; // تاريخ الاصدار
+            output += '<p><strong>النوع: </strong>' + book[4] + '</p>'; // النوع
+            output += '<p><strong>مراجعتي للكتاب: </strong>' + book[5] + '</p>'; // مراجعتي للكتاب
+            output += '</div>';
+          });
+
+          // إدراج البيانات في الصفحة
+          $('#results').html(output);
+
+          // تغيير النتائج عند تحديد فئة جديدة من القائمة المنسدلة
+          $('#categories-dropdown-top').on('change', function(){
+            var selectedCategory = $(this).val(); // الفئة المحددة
+            if(selectedCategory !== 'all'){
+              $('.book').hide(); // إخفاء جميع الكتب
+              $('.' + selectedCategory).show(); // إظهار الكتب التي تنتمي للفئة المحددة
+            } else {
+              $('.book').show(); // إظهار جميع الكتب عند تحديد "الكل"
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
