@@ -24,8 +24,21 @@
       $('#publish-date').text(localStorage.getItem('publishDate'));
       $('#genre').text(localStorage.getItem('genre'));
       $('#review').text(localStorage.getItem('review'));
-      $('#book-cover').attr('src', localStorage.getItem('coverURL')); // تحديد مسار الصورة لعنصر الصورة
+      $('#book-cover').attr('src', getQueryVariable('cover')); // استخدام الدالة لاسترجاع قيمة معلمة الـ GET وتعيينها كمسار الصورة
     });
+
+    // دالة لاسترجاع قيمة معلمة الـ GET من عنوان الصفحة
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            if (decodeURIComponent(pair[0]) == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+        console.log('Query variable %s not found', variable);
+    }
   </script>
 </body>
 </html>
