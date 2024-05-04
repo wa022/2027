@@ -52,7 +52,7 @@
 
           // Redirect to view.html with bookId as query parameter
           bookElement.addEventListener('click', () => {
-            window.location.href = `view.html?bookId=${bookId}`;
+            window.location.href = `view.html?bookId=${bookId}&title=${title}&cover=${cover}&author=${author}&review=${review}`;
           });
 
           bookElement.appendChild(coverImage);
