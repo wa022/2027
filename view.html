@@ -1,18 +1,65 @@
 <!DOCTYPE html>
 <html lang="ar">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عرض الكتاب</title>
+  <title>تفاصيل الكتاب</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header>
-    <h1>عرض الكتاب</h1>
+    <h1>تفاصيل الكتاب</h1>
   </header>
   <main>
-    <div id="book-details"></div>
+    <div class="container" id="book-details"></div>
   </main>
-  <script src="script.js"></script>
+
+  <script>
+    const bookDetailsElement = document.getElementById('book-details');
+
+    const bookId = new URLSearchParams(window.location.search).get('bookId');
+
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyB5WTjIR5OZt108xl9uQApzeoNRWuMyYRE')
+      .then(response => response.json())
+      .then(data => {
+        const books = data.values.slice(1); // Skip header row
+
+        const book = books.find(book => book[1] === bookId); // Assuming the book ID is in the second column (index 1)
+
+        if (book) {
+          const title = book[0];
+          const cover = book[1];
+          const author = book[2];
+          const review = book[4];
+
+          const coverImage = document.createElement('img');
+          coverImage.src = cover;
+          coverImage.classList.add('book-cover');
+
+          const titleElement = document.createElement('h2');
+          titleElement.textContent = title;
+          titleElement.classList.add('book-title');
+
+          const authorElement = document.createElement('p');
+          authorElement.textContent = `بقلم: ${author}`;
+          authorElement.classList.add('book-author');
+
+          const reviewElement = document.createElement('p');
+          reviewElement.textContent = review;
+          reviewElement.classList.add('book-review');
+
+          bookDetailsElement.appendChild(coverImage);
+          bookDetailsElement.appendChild(titleElement);
+          bookDetailsElement.appendChild(authorElement);
+          bookDetailsElement.appendChild(reviewElement);
+        } else {
+          bookDetailsElement.textContent = 'لا يوجد كتاب بهذا المعرف.';
+        }
+      });
+  </script>
 </body>
+
 </html>
+
