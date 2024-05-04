@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مراجعاتي</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+  </style>
+</head>
+<body>
+ <section id="results-container">
+    <h3>مراجعاتي</h3>
+    <input type="text" id="search-box" placeholder="ابحث عن رواية">
+ </section>
+
+ <section id="results-container">
+    <select id="categories-dropdown-top">
+      <option value="all">الكل</option>
+    </select>
+    <div id="results">
+    </div>
+ </section>
+
+ <script>
+    $(document).ready(function(){
+      $.ajax({
+        url: "https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyBhiqVypmyLHYPmqZYtvdSvxEopcLZBdYU",
+        method: "GET",
+        success: function(data){
+          var books = data.values;
+          books.shift();
+
+          var categories = [];
+          $.each(books, function(index, book){
+            if (!categories.includes(book[4])) {
+              categories.push(book[4]);
+            }
+          });
+
+          $.each(categories, function(index, category){
+            $('#categories-dropdown-top').append('<option value="' + category + '">' + category + '</option>');
+          });
+
+          var output = '';
+          $.each(books, function(index, book){
+            output += '<div class="book ' + book[4] + '">';
+            output += '<h2>' + book[0] + '</h2>';
+            output += '<img src="' + book[1] + '" alt="غلاف الكتاب">';
+            output += '<p><strong>اسم الكاتب: </strong>' + book[2] + '</p>';
+            output += '<p><strong>تاريخ الاصدار: </strong>' + book[3] + '</p>';
+            output += '<p><strong>النوع: </strong>' + book[4] + '</p>';
+            output += '<p><strong>مراجعتي للكتاب: </strong>' + book[5] + '</p>';
+            output += '<button class="review-button" data-title="' + book[0] + '" data-author="' + book[2] + '" data-publish-date="' + book[3] + '" data-genre="' + book[4] + '" data-review="' + book[5] + '">مراجعتي للكتاب</button>'; // زر مراجعتي للكتاب
+            output += '</div>';
+          });
+
+          $('#results').html(output);
+
+          $('.review-button').click(function() {
+            var title = $(this).data('title');
+            var author = $(this).data('author');
+            var publishDate = $(this).data('publish-date');
+            var genre = $(this).data('genre');
+            var review = $(this).data('review');
+            localStorage.setItem('title', title);
+            localStorage.setItem('author', author);
+            localStorage.setItem('publishDate', publishDate);
+            localStorage.setItem('genre', genre);
+            localStorage.setItem('review', review);
+            window.location.href = 'view.html';
+          });
+
+          $('#categories-dropdown-top').on('change', function(){
+            var selectedCategory = $(this).val();
+            if(selectedCategory !== 'all'){
+              $('.book').hide();
+              $('.' + selectedCategory).show();
+            } else {
+              $('.book').show();
+            }
+          });
+        }
+      });
+    });
+ </script>
+</body>
+</html>
