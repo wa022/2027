@@ -131,11 +131,6 @@ header h1 {
   <section id="results-container">
     <select id="categories-dropdown-top">
       <option value="all">الكل</option>
-      <option value="خيال">الخيال</option>
-      <option value="الغموض">الغموض</option>
-            <option value="الرومانسية">الرومانسية</option>
-
-      
     </select>
     <div id="results">
     </div>
@@ -150,6 +145,19 @@ header h1 {
           // عمل نموذج يحتوي على البيانات المطلوبة
           var books = data.values;
           books.shift(); // يزيل رأس الجدول (عناوين الأعمدة)
+
+          // جمع الفئات المتاحة
+          var categories = [];
+          $.each(books, function(index, book){
+            if (!categories.includes(book[4])) {
+              categories.push(book[4]);
+            }
+          });
+
+          // تحديث قائمة الفئات المنسدلة
+          $.each(categories, function(index, category){
+            $('#categories-dropdown-top').append('<option value="' + category + '">' + category + '</option>');
+          });
 
           // تجهيز البيانات وتنظيمها بشكل div
           var output = '';
@@ -183,5 +191,3 @@ header h1 {
   </script>
 </body>
 </html>
-
-
