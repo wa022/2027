@@ -1,69 +1,187 @@
 <!DOCTYPE html>
-<html lang="ar">
-
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>استعراض الكتب</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مكتبة المبدعين</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+/* style.css */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Align items to the center */
+  padding: 10px 20px; /* Add padding for better spacing */
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 2.5em;
+  text-align: right;
+}
+
+#search-bar-container {
+  display: flex;
+  align-items: center;
+}
+
+#search-box {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10%; /* Add 10% margin from the right */
+}
+
+#categories-dropdown {
+  margin-left: 20px; /* Adjust spacing as needed */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #fff;
+  appearance: none; /* Hide default dropdown arrow */
+}
+
+#categories-dropdown:hover {
+  border-color: #ddd;
+}
+
+#categories-dropdown:focus {
+  outline: none;
+  border-color: #ccc;
+}
+
+#results-container {
+  display: flex;
+  flex-direction: column; /* Stack categories dropdown and book results */
+  align-items: center;
+  padding: 20px;
+}
+
+#categories-dropdown-top {
+  margin-bottom: 20px; /* Add spacing between top dropdown and book results */
+}
+
+#results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.book {
+  width: 250px; /* Adjust width as needed */
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+}
+
+.book img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.book h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.book p {
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column; /* Stack logo, search, and categories */
+    align-items: flex-start;
+  }
+
+  .header-content {
+    margin-top: 10px; /* Add space between logo and search box on smaller screens */
+  }
+
+  #search-bar-container {
+    margin: 0; /* Remove left margin on smaller screens */
+    width: 100%; /* Make search box full width */
+  }
+
+  header h1 {
+    text-align: center; /* Center align header on smaller screens */
+  }
+}
+  </style>
 </head>
-
 <body>
-  <header>
-    <h1>استعراض الكتب</h1>
-  </header>
-  <main>
-    <div class="container" id="books-container"></div>
-  </main>
+  <div class="header-container">
+    <div class="header-content">
+      <h3>مكتبة المبدعين</h3>
+      <div id="search-bar-container">
+        <input type="text" id="search-box" placeholder="ابحث عن رواية">
+      </div>
+    </div>
+  </div>
 
-  <script>
-    const booksContainer = document.getElementById('books-container');
+  <section id="results-container">
+    <select id="categories-dropdown-top">
+      <option value="all">الكل</option>
+      <option value="خيال">الخيال</option>
+      <option value="الغموض">الغموض</option>
+            <option value="الرومانسية">الرومانسية</option>
 
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyB5WTjIR5OZt108xl9uQApzeoNRWuMyYRE')
-      .then(response => response.json())
-      .then(data => {
-        const books = data.values.slice(1); // Skip header row
+      
+    </select>
+    <div id="results">
+    </div>
+  </section>
 
-        books.forEach(book => {
-          const title = book[0];
-          const cover = book[1];
-          const author = book[2];
-          const review = book[4];
-          const bookId = book[1]; // Assuming the book ID is in the second column (index 1)
+  <script>
+    $(document).ready(function(){
+      $.ajax({
+        url: "https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyBhiqVypmyLHYPmqZYtvdSvxEopcLZBdYU",
+        method: "GET",
+        success: function(data){
+          // عمل نموذج يحتوي على البيانات المطلوبة
+          var books = data.values;
+          books.shift(); // يزيل رأس الجدول (عناوين الأعمدة)
 
-          const bookElement = document.createElement('div');
-          bookElement.classList.add('book');
+          // تجهيز البيانات وتنظيمها بشكل div
+          var output = '';
+          $.each(books, function(index, book){
+            output += '<div class="book ' + book[4] + '">'; // تضيف فئة الكتاب كفئة للعنصر
+            output += '<h2>' + book[0] + '</h2>'; // عنوان الكتاب
+            output += '<img src="' + book[1] + '" alt="غلاف الكتاب">'; // غلاف الكتاب
+            output += '<p><strong>اسم الكاتب: </strong>' + book[2] + '</p>'; // اسم الكاتب
+            output += '<p><strong>تاريخ الاصدار: </strong>' + book[3] + '</p>'; // تاريخ الاصدار
+            output += '<p><strong>النوع: </strong>' + book[4] + '</p>'; // النوع
+            output += '<p><strong>مراجعتي للكتاب: </strong>' + book[5] + '</p>'; // مراجعتي للكتاب
+            output += '</div>';
+          });
 
-          const coverImage = document.createElement('img');
-          coverImage.src = cover;
-          coverImage.classList.add('book-cover');
+          // إدراج البيانات في الصفحة
+          $('#results').html(output);
 
-          const titleElement = document.createElement('h2');
-          titleElement.textContent = title;
-          titleElement.classList.add('book-title');
-
-          const authorElement = document.createElement('p');
-          authorElement.textContent = `بقلم: ${author}`;
-          authorElement.classList.add('book-author');
-
-          const reviewElement = document.createElement('p');
-          reviewElement.textContent = review;
-          reviewElement.classList.add('book-review');
-
-          // Redirect to view.html with bookId as query parameter
-          bookElement.addEventListener('click', () => {
-            window.location.href = `view.html?bookId=${bookId}&title=${title}&cover=${cover}&author=${author}&review=${review}`;
-          });
-
-          bookElement.appendChild(coverImage);
-          bookElement.appendChild(titleElement);
-          bookElement.appendChild(authorElement);
-          bookElement.appendChild(reviewElement);
-
-          booksContainer.appendChild(bookElement);
-        });
-      });
-  </script>
+          // تغيير النتائج عند تحديد فئة جديدة من القائمة المنسدلة
+          $('#categories-dropdown-top').on('change', function(){
+            var selectedCategory = $(this).val(); // الفئة المحددة
+            if(selectedCategory !== 'all'){
+              $('.book').hide(); // إخفاء جميع الكتب
+              $('.' + selectedCategory).show(); // إظهار الكتب التي تنتمي للفئة المحددة
+            } else {
+              $('.book').show(); // إظهار جميع الكتب عند تحديد "الكل"
+            }
+          });
+        }
+      });
+    });
+  </script>
 </body>
-
 </html>
+
+
