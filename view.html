@@ -6,39 +6,32 @@
   <title>عرض الكتاب</title>
 </head>
 <body>
-  <h1>معلومات الكتاب</h1>
+  <h1 id="book-title"></h1>
+  <img src="" alt="غلاف الكتاب" id="book-cover"> <!-- إضافة عنصر الصورة لعرض غلاف الكتاب -->
   <div id="book-info">
-    <p><strong>اسم الكتاب: </strong><span id="book-title"></span></p>
     <p><strong>اسم الكاتب: </strong><span id="book-author"></span></p>
     <p><strong>تاريخ الاصدار: </strong><span id="publish-date"></span></p>
     <p><strong>النوع: </strong><span id="genre"></span></p>
     <p><strong>مراجعتي للكتاب: </strong><span id="review"></span></p>
-    <img src="" alt="غلاف الكتاب" id="book-cover"> <!-- إضافة عنصر الصورة لعرض غلاف الكتاب -->
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
     $(document).ready(function(){
-      $('#book-title').text(localStorage.getItem('title'));
-      $('#book-author').text(localStorage.getItem('author'));
-      $('#publish-date').text(localStorage.getItem('publishDate'));
-      $('#genre').text(localStorage.getItem('genre'));
-      $('#review').text(localStorage.getItem('review'));
-      $('#book-cover').attr('src', getQueryVariable('cover')); // استخدام الدالة لاسترجاع قيمة معلمة الـ GET وتعيينها كمسار الصورة
-    });
+      var title = localStorage.getItem('title');
+      var author = localStorage.getItem('author');
+      var publishDate = localStorage.getItem('publishDate');
+      var genre = localStorage.getItem('genre');
+      var review = localStorage.getItem('review');
+      var coverURL = localStorage.getItem('coverURL');
 
-    // دالة لاسترجاع قيمة معلمة الـ GET من عنوان الصفحة
-    function getQueryVariable(variable) {
-        var query = window.location.search.substring(1);
-        var vars = query.split('&');
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split('=');
-            if (decodeURIComponent(pair[0]) == variable) {
-                return decodeURIComponent(pair[1]);
-            }
-        }
-        console.log('Query variable %s not found', variable);
-    }
+      $('#book-title').text(title);
+      $('#book-author').text(author);
+      $('#publish-date').text(publishDate);
+      $('#genre').text(genre);
+      $('#review').text(review);
+      $('#book-cover').attr('src', coverURL); // تعيين مسار الصورة لعنصر الصورة
+    });
   </script>
 </body>
 </html>
