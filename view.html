@@ -19,47 +19,38 @@
   <script>
     const bookDetailsElement = document.getElementById('book-details');
 
-    const bookId = new URLSearchParams(window.location.search).get('bookId');
+    // Get book details from query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const title = urlParams.get('title');
+    const cover = urlParams.get('cover');
+    const author = urlParams.get('author');
+    const review = urlParams.get('review');
 
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/1eFNyOTc1sjFwoBYA5FzB4f-ecGs0w-COjOZ_mXLWBbo/values/Sheet1!A1:I100?key=AIzaSyB5WTjIR5OZt108xl9uQApzeoNRWuMyYRE')
-      .then(response => response.json())
-      .then(data => {
-        const books = data.values.slice(1); // Skip header row
+    if (title && cover && author && review) {
+      const coverImage = document.createElement('img');
+      coverImage.src = cover;
+      coverImage.classList.add('book-cover');
 
-        const book = books.find(book => book[1] === bookId); // Assuming the book ID is in the second column (index 1)
+      const titleElement = document.createElement('h2');
+      titleElement.textContent = title;
+      titleElement.classList.add('book-title');
 
-        if (book) {
-          const title = book[0];
-          const cover = book[1];
-          const author = book[2];
-          const review = book[4];
+      const authorElement = document.createElement('p');
+      authorElement.textContent = `بقلم: ${author}`;
+      authorElement.classList.add('book-author');
 
-          const coverImage = document.createElement('img');
-          coverImage.src = cover;
-          coverImage.classList.add('book-cover');
+      const reviewElement = document.createElement('p');
+      reviewElement.textContent = review;
+      reviewElement.classList.add('book-review');
 
-          const titleElement = document.createElement('h2');
-          titleElement.textContent = title;
-          titleElement.classList.add('book-title');
-
-          const authorElement = document.createElement('p');
-          authorElement.textContent = `بقلم: ${author}`;
-          authorElement.classList.add('book-author');
-
-          const reviewElement = document.createElement('p');
-          reviewElement.textContent = review;
-          reviewElement.classList.add('book-review');
-
-          bookDetailsElement.appendChild(coverImage);
-          bookDetailsElement.appendChild(titleElement);
-          bookDetailsElement.appendChild(authorElement);
-          bookDetailsElement.appendChild(reviewElement);
-        } else {
-          bookDetailsElement.textContent = 'لا يوجد كتاب بهذا المعرف.';
-        }
-      });
+      bookDetailsElement.appendChild(coverImage);
+      bookDetailsElement.appendChild(titleElement);
+      bookDetailsElement.appendChild(authorElement);
+      bookDetailsElement.appendChild(reviewElement);
+    } else {
+      bookDetailsElement.textContent = 'لا يوجد كتاب بهذا المعرف.';
+    }
   </script>
 </body>
 
 </html>
-
