@@ -13,6 +13,7 @@
     <p><strong>تاريخ الاصدار: </strong><span id="publish-date"></span></p>
     <p><strong>النوع: </strong><span id="genre"></span></p>
     <p><strong>مراجعتي للكتاب: </strong><span id="review"></span></p>
+    <img src="" alt="غلاف الكتاب" id="book-cover"> <!-- إضافة عنصر الصورة لعرض غلاف الكتاب -->
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -23,6 +24,7 @@
       $('#publish-date').text(localStorage.getItem('publishDate'));
       $('#genre').text(localStorage.getItem('genre'));
       $('#review').text(localStorage.getItem('review'));
+      $('#book-cover').attr('src', localStorage.getItem('coverURL')); // تحديد مسار الصورة لعنصر الصورة
     });
   </script>
 </body>
